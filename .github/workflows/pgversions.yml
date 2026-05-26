@@ -1,0 +1,22 @@
+name: Get PostgreSQL versions to test
+
+on:
+    workflow_call:
+        outputs:
+            pgversions:
+                description: "PostgreSQL versions to test"
+                value: ${{ jobs.get_pgversions.outputs.pgversions }}
+
+jobs:
+    get_pgversions:
+        name: Get PostgreSQL versions to test
+        runs-on: ubuntu-latest
+        outputs:
+            pgversions: ${{ steps.step1.outputs.pgversions }}
+        steps:
+            -
+                id: step1
+                run: |
+                    curl -sf https://www.postgresql.org/versions.json > versions.json
+                    VERSIONS=$(jq -c '[.[] | select(.supported == true) | .major | tostring]' versions.json)
+                    echo "pgversions=$VERSIONS" >> $GITHUB_OUTPUT

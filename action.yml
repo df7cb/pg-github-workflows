@@ -1,0 +1,25 @@
+name: Install PostgreSQL
+description: Download and install PostgreSQL, and create a user
+inputs:
+  pgversion:
+    description: PostgreSQL version
+    required: true
+    type: string
+runs:
+  using: composite
+  steps:
+    - run: echo ${{ inputs.pgversion }}
+      shell: bash
+    - run: sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -v ${{ inputs.pgversion }} -p -i
+      shell: bash
+    - run: sudo -u postgres createuser -s "$USER"
+      shell: bash
+    - run: sudo -u postgres createdb -O "$USER" "$USER"
+      shell: bash
+    - run: psql -c 'select version()' postgres
+      shell: bash
+#    - name: Set GitHub Path
+#      run: echo "$GITHUB_ACTION_PATH" >> $GITHUB_PATH
+#      shell: bash
+#      env:
+#        GITHUB_ACTION_PATH: ${{ github.action_path }}
